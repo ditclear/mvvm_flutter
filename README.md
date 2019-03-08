@@ -1,16 +1,37 @@
-# mvvm_flutter
+# MVVM-Flutter
 
-A new Flutter application.
+Build MVVM App for Android and IOS with Flutter。
 
-## Getting Started
+项目结构类似于[MVVM-Android](https://github.com/ditclear/MVVM-Android)。
 
-This project is a starting point for a Flutter application.
+```bash
+.
+├── di
+│   └── modules.dart
+├── helper
+│   ├── netutils.dart
+│   ├── toast.dart
+│   └── widgetutils.dart
+├── main.dart
+├── model
+│   ├── remote.dart
+│   └── repository.dart
+└── view
+    └── home.dart
 
-A few resources to get you started if this is your first Flutter project:
+```
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+#### dependencies
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+- [dio](https://github.com/flutterchina/dio) : 网络请求
+- [rxdart](https://github.com/ReactiveX/rxdart)：响应式编程
+- [flutter-provide](https://github.com/google/flutter-provide)：通知ui更新数据
+
+### 截图
+
+![](screenshot.png)
+
+#### LICENSE
+
+the Apache License
+
