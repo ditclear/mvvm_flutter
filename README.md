@@ -20,6 +20,9 @@ Build MVVM App for Android and IOS with Flutter。
     └── home.dart
 
 ```
+##### 下载体验
+
+![](android.png)
 
 #### dependencies
 
