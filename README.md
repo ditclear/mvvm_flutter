@@ -4,22 +4,8 @@ Build MVVM App for Android and IOS with Flutter。
 
 项目结构类似于[MVVM-Android](https://github.com/ditclear/MVVM-Android)。
 
-```bash
-.
-├── di
-│   └── modules.dart
-├── helper
-│   ├── netutils.dart
-│   ├── toast.dart
-│   └── widgetutils.dart
-├── main.dart
-├── model
-│   ├── remote.dart
-│   └── repository.dart
-└── view
-    └── home.dart
+![](architecture.png)
 
-```
 ##### 下载体验
 
 ![](android.png)
