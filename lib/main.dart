@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/di/modules.dart';
-import 'package:mvvm_flutter/model/remote.dart';
-import 'package:mvvm_flutter/model/repository.dart';
-import 'package:mvvm_flutter/view/home.dart';
-import 'package:provide/provide.dart';
+import 'package:mvvm_flutter/view/home_page.dart';
+
+import 'di/app_module.dart';
+import 'di/dartin.dart';
 
 void main() {
-
-  runApp(ProviderNode(child: MyApp(), providers: providers));
-
+  startDartIn(appModule);
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,20 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MVVM-Flutter',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeWidget(),
-    );
+        title: 'MVVM-Flutter',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: HomePage('MVVM-Flutter'));
   }
 }

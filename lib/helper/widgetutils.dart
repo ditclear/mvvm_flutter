@@ -26,5 +26,7 @@ dispatchFailure(BuildContext context, dynamic e) {
     }
   }
   print("出错了："+message);
-  Toast.show(message, context, type: Toast.ERROR);
+  if(context!=null) {
+    Toast.show(message, context, type: Toast.ERROR);
+  }
 }
