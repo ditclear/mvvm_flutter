@@ -11,8 +11,7 @@ import 'package:provide/provide.dart';
 class HomePage extends PageProvideNode {
   final String title;
 
-
-  HomePage(this.title){
+  HomePage(this.title) {
     mProviders.provideValue(inject<HomeProvide>(params: [title]));
   }
 
@@ -20,11 +19,9 @@ class HomePage extends PageProvideNode {
   Widget buildContent(BuildContext context) {
     return _HomeContentPage();
   }
-
 }
 
 class _HomeContentPage extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return _HomeContentState();

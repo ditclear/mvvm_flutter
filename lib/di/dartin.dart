@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/// A [DartInScope] provides a separate type-space for a provider, thus
+/// allowing more than one provider of the same type.
+///
+/// This should always be initialized as a static const and passed around.
+/// The name is only used for descriptive purposes.
 class DartInScope {
   final String _name;
 
@@ -14,7 +19,7 @@ class DartInScope {
   }
 }
 
-/// DartIns are the values passed to the [DartInNodes].
+/// DartIns are the container to provide dependencies.
 ///
 /// DartIns can be added to using either convenience functions such as
 /// [provideValue] or by passing in DartIns.
@@ -41,7 +46,6 @@ class DartIns {
   void provide<T>(DartIn<T> provider, {DartInScope scope}) {
     // This should never happen.
 //    assert(provider.type == T);
-
     _providersForScope(scope)[provider.type] = provider;
   }
 
@@ -71,30 +75,37 @@ class DartIns {
     }
   }
 
+  /// Add dartin in different scopes from [Module]
+  void provideFromModule(Module module) {
+    final tempMap = module._providerIns;
+    for (var scope in tempMap.keys) {
+      for (var dartin in tempMap[scope]) {
+        provide(dartin, scope: scope);
+      }
+    }
+  }
+
   /// Syntactic sugar around adding a value based provider.
   ///
-  /// If this value is [Listenable], widgets that use this value can be rebuilt
-  /// on change. If no [scope] is passed in, the default one will be used.
+  ///  If no [scope] is passed in, the default one will be used.
   void provideValue<T>(T value, {DartInScope scope}) {
     provide(DartIn._value(value), scope: scope);
   }
 
+  /// get DartIn from Type,maybe null
   DartIn<T> getFromType<T>({DartInScope scope}) {
     return _providersForScope(scope)[T];
   }
 
-  T value<T>({DartInScope scope, List values}) {
-    return getFromType<T>(scope: scope)?.get(values: values);
+  /// find T from [_providers] , may be null
+  T value<T>({DartInScope scope, List params}) {
+    return getFromType<T>(scope: scope)?.get(params: params);
   }
 
   Map<Type, DartIn<dynamic>> _providersForScope(scope) => _providers[scope ?? defaultScope] ??= {};
 }
 
 /// A DartIn provides a value on request.
-///
-/// If a provider implements [Listenable], it will be listened to by the
-/// [Provide] widget to rebuild on change. Other than the built in providers,
-/// one can implement DartIn to provide caching or linkages.
 ///
 /// When a DartIn is instantiated within a [providers.provide] call, the type
 /// can be inferred and therefore the type can be ommited, but otherwise,
@@ -106,7 +117,7 @@ abstract class DartIn<T> {
   ///
   /// Because providers could potentially initialize the value each time [get]
   /// is called, this should be called as infrequently as possible.
-  T get({List values});
+  T get({List params});
 
   /// The type that is provided by the provider.
   Type get type;
@@ -138,7 +149,7 @@ class _ValueDartIn<T> extends _TypedDartIn<T> {
   final T _value;
 
   @override
-  T get({List values}) => _value;
+  T get({List params}) => _value;
 
   _ValueDartIn(this._value);
 }
@@ -157,12 +168,12 @@ class _LazyDartIn<T> with _TypedDartIn<T> {
   _LazyDartIn(this._initalizer);
 
   @override
-  T get({List values}) {
+  T get({List params}) {
     // Need to have a local copy for casting because
     // dart requires it.
     T value;
     if (_value == null) {
-      value = _value ??= _initalizer(params: _ParameterList.parametersOf(values));
+      value = _value ??= _initalizer(params: _ParameterList.parametersOf(params));
     }
     return _value;
   }
@@ -179,47 +190,73 @@ class _FactoryDartIn<T> with _TypedDartIn<T> {
   _FactoryDartIn(this.providerFunction);
 
   @override
-  T get({List values}) => providerFunction(params: _ParameterList.parametersOf(values));
+  T get({List params}) => providerFunction(params: _ParameterList.parametersOf(params));
 }
 
+/// Module Definition
 class Module {
-  final List<DartIn> providerIns;
-  Module(this.providerIns);
-}
+  /// Gather dependencies & properties definitions
+  final Map<DartInScope, List<DartIn>> _providerIns = {};
 
-class _ParameterList {
-  final List<Object> values;
-
-  get(int i) {
-    if (values == null || i > values.length - 1 || i < 0) {
-      return null;
-    }
-    return values[i];
+  /// dependencies in defaultScope
+  Module(List<DartIn> defaults) {
+    _providerIns[DartIns.defaultScope] = defaults ??= [];
   }
 
-  _ParameterList.parametersOf(this.values);
+  /// dependencies in otherScope
+  void addOthers(DartInScope otherScope, List<DartIn> others) {
+    assert(otherScope._name != DartIns.defaultScope._name);
+    _providerIns[otherScope] = others ??= [];
+  }
 }
 
-DartIn<T> factory<T>(_DartInFunction<T> value,{String scope }) => DartIn<T>._withFactory(value);
+/// List of parameter
+class _ParameterList {
+  final List<Object> params;
 
+  /**
+   * get element at given index
+   */
+  get(int i) {
+    if (params == null || i > params.length - 1 || i < 0) {
+      return null;
+    }
+    return params[i];
+  }
+
+  _ParameterList.parametersOf(this.params);
+}
+
+/// Creates a provider that provides a new value using the [_DartInFunction] for each
+/// requestor of the value.
+DartIn<T> factory<T>(_DartInFunction<T> value, {String scope}) => DartIn<T>._withFactory(value);
+
+/// Creates a provider with the value provided to it.
 DartIn<T> single<T>(T value) => DartIn<T>._value(value);
 
+/// Creates a provider which will initialize using the [_DartInFunction]
+/// the first time the value is requested.
 DartIn<T> lazy<T>(_DartInFunction<T> value) => DartIn<T>._lazy(value);
 
-T get<T>({DartInScope scope, List params}) {
-  assert(_dartIns != null);
-  return _dartIns.value<T>(scope: scope, values: params);
+/// get T  from dartIns by T.runtimeType and params
+T get<T>({String scopeName, List params}) {
+  assert(_dartIns != null, "error: please use startDartIn method first ");
+  final scope = scopeName == null ? DartIns.defaultScope : DartInScope(scopeName);
+  final result = _dartIns.value<T>(scope: scope, params: params);
+  assert(result != null, "error: not found $T in ${scope.toString()}");
+  return result;
 }
 
-T inject<T>({DartInScope scope, List params}) => get<T>(scope: scope, params: params);
+/// get T  from dartIns by T.runtimeType and params
+T inject<T>({String scopeName, List params}) => get<T>(scopeName: scopeName, params: params);
 
+/// global dependencies 's container in App
 DartIns _dartIns;
 
+/// init and load dependencies to [DartIns] from modules
 startDartIn(List<Module> modules) {
   _dartIns = DartIns();
   for (var module in modules) {
-    for (var providerIn in module.providerIns) {
-      _dartIns.provide(providerIn);
-    }
+    _dartIns.provideFromModule(module);
   }
 }
