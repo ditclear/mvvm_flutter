@@ -6,13 +6,12 @@ Future<T> _showAlert<T>({BuildContext context, Widget child}) => showDialog<T>(
       barrierDismissible: false,
       builder: (BuildContext context) => child,
     );
-/**
- * onlyPositive  : 只有确定按钮
- */
+
+
 Future<bool> showAlert(BuildContext context,
         {String title,
-        String negativeText = "取消",
-        String positiveText = "确定",
+        String negativeText = "Cancel",
+        String positiveText = "Confirm",
         bool onlyPositive = false}) =>
     _showAlert<bool>(
       context: context,
@@ -64,9 +63,7 @@ List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive,
   }
 }
 
-/**
- * 显示loading框  , 隐藏调用 Navigator.pop(context)
- */
+
 Future _showLoadingDialog(BuildContext c, LoadingDialog loading,
         {bool cancelable = true}) =>
     showDialog(

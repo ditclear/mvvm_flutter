@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/di/dartin.dart';
 import 'package:mvvm_flutter/model/repository.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,11 +10,11 @@ import 'package:rxdart/rxdart.dart';
  */
 class HomeProvide extends ChangeNotifier {
   final CompositeSubscription _subscriptions = CompositeSubscription();
-  final GithubRepo _repo; //数据仓库
-  String username = ""; //账号
-  String password = ""; //密码
-  bool _loading = false; // 加载中
-  String _response = ""; //响应数据
+  final GithubRepo _repo;
+  String username = "";
+  String password = "";
+  bool _loading = false;
+  String _response = "";
 
   final String title;
 
@@ -45,11 +44,11 @@ class HomeProvide extends ChangeNotifier {
   HomeProvide(this.title,this._repo);
 
   /**
-   * 调用model层的方法进行登录
-   * doOnData : 请求成功时，处理响应数据
-   * doOnError : 请求失败时，处理错误
-   * doOnListen ： 开始时loading为true,通知ui更新
-   * doOnDone ： 结束时loading为false,通知ui更新
+   * call the model layer 's method to login
+   * doOnData : handle response when success
+   * doOnError : handle error when failure
+   * doOnListen ： show loading when listen start
+   * doOnDone ： hide loading when complete
    */
   Observable login() => _repo
       .login(username, password)
@@ -72,6 +71,7 @@ class HomeProvide extends ChangeNotifier {
 
   }
 
+  /// add [StreamSubscription] to [_subscriptions]
   void plus(StreamSubscription s) {
     _subscriptions.add(s);
   }

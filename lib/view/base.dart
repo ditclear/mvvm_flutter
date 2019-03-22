@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provide/provide.dart';
 
 /**
- * 普通widget点击事件处理
+ * normal click event
  */
 abstract class Presenter {
   void onClick(String action);
 }
 
 /**
- * 列表Item点击事件处理
+ * ListView Item Click
  */
 abstract class ItemPresenter<T> {
   void onItemClick(String action, T item);

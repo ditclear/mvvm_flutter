@@ -1,6 +1,6 @@
+import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/di/dartin.dart';
 import 'package:mvvm_flutter/helper/dialog.dart';
 import 'package:mvvm_flutter/helper/toast.dart';
 import 'package:mvvm_flutter/helper/widgetutils.dart';
@@ -100,7 +100,7 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(10.0),
                   icon: Icon(Icons.person),
-                  labelText: '账号',
+                  labelText: 'Account',
                 ),
                 autofocus: false,
                 onChanged: (str) => _viewModel.username = str,
@@ -111,7 +111,7 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(10.0),
                   icon: Icon(Icons.lock),
-                  labelText: '密码',
+                  labelText: 'Password',
                 ),
                 autofocus: false,
                 onChanged: (str) => _viewModel.password = str,
@@ -168,7 +168,7 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
       return const FittedBox(
         fit: BoxFit.scaleDown,
         child: const Text(
-          '使用GitHub账号登录',
+          'Login With Github Account',
           maxLines: 1,
           textAlign: TextAlign.center,
           overflow: TextOverflow.fade,

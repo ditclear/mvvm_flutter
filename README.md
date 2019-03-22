@@ -2,25 +2,30 @@
 
 Build MVVM App for Android and IOS with Flutter。
 
-项目结构类似于[MVVM-Android](https://github.com/ditclear/MVVM-Android)。
+The Structure seems like [MVVM-Android](https://github.com/ditclear/MVVM-Android)。
 
 ![](architecture.png)
 
-##### 下载体验
+##### DownLoad
 
 ![](android.png)
 
 #### dependencies
 
-- [dio](https://github.com/flutterchina/dio) : 网络请求
-- [rxdart](https://github.com/ReactiveX/rxdart)：响应式编程
-- [flutter-provide](https://github.com/google/flutter-provide)：通知ui更新数据
+- [dio](https://github.com/flutterchina/dio) : netword 
+- [rxdart](https://github.com/ReactiveX/rxdart)：reactive programming
+- [flutter-provide](https://github.com/google/flutter-provide)：state managing
+- [dartin](https://github.com/ditclear/dartin): dependency injection
 
-> 思想：M-V-VM各层直接通过rx衔接，配合响应式的思想和rxdart的操作符进行逻辑处理，最后通过provide来更新视图。
+> PS：each layer connected by rx, use responsive thinking and rxdart operators for logical processing.Finally, update the view with [flutter-provide](https://github.com/google/flutter-provide).
 
-### 截图
+### ScreenShot
 
-![](screenshot.png)
+![](screenshot.png)![](ios.png)
+
+
+
+
 
 #### Code
 
@@ -42,20 +47,20 @@ class GithubRepo {
 }
 //viewmodel
 class HomeViewModel extends ChangeNotifier {
-  final GithubRepo _repo; //数据仓库
-  String username = ""; //账号
-  String password = ""; //密码
-  bool _loading = false; // 加载中
-  String _response = ""; //响应数据
+  final GithubRepo _repo; 
+  String username = ""; 
+  String password = ""; 
+  bool _loading = false; 
+  String _response = ""; 
   //...
   HomeViewModel(this._repo);
 
-  /**
-   * 调用model层的方法进行登录
-   * doOnData : 请求成功时，处理响应数据
-   * doOnError : 请求失败时，处理错误
-   * doOnListen ： 开始时loading为true,通知ui更新
-   * doOnDone ： 结束时loading为false,通知ui更新
+   /**
+   * call the model layer 's method to login
+   * doOnData : handle response when success
+   * doOnError : handle error when failure
+   * doOnListen ： show loading when listen start
+   * doOnDone ： hide loading when complete
    */
   Observable login() => _repo
       .login(username, password)

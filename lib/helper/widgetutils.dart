@@ -10,23 +10,23 @@ dispatchFailure(BuildContext context, dynamic e) {
     final response = e.response;
 
     if (response?.statusCode == 401) {
-      message = "账号或密码错误";
+      message = "account or password error ";
     } else if (403 == response?.statusCode) {
-      message = "禁止访问";
+      message = "forbidden";
     } else if (404 == response?.statusCode) {
-      message = "链接错误";
+      message = "page not found";
     } else if (500 == response?.statusCode) {
-      message = "服务器内部错误";
+      message = "Server internal error";
     } else if (503 == response?.statusCode) {
-      message = "服务器升级中";
+      message = "Server Updating";
     } else if (e.error is SocketException) {
-      message = "网络未连接";
+      message = "network cannot use";
     } else {
       message = "Oops!!";
     }
   }
-  print("出错了："+message);
-  if(context!=null) {
+  print("error ：" + message);
+  if (context != null) {
     Toast.show(message, context, type: Toast.ERROR);
   }
 }

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mvvm_flutter/view/home_page.dart';
 
 import 'di/app_module.dart';
-import 'di/dartin.dart';
+import 'package:dartin/dartin.dart';
+
 
 void main() {
+  /// DartIn start
   startDartIn(appModule);
+
   runApp(MyApp());
 }
 

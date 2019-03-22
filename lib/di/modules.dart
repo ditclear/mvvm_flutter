@@ -7,6 +7,7 @@ final Dio dio = Dio()
   ..interceptors.add(AuthInterceptor())
   ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
 
+
 class AuthInterceptor extends Interceptor {
   @override
   onRequest(RequestOptions options) {
