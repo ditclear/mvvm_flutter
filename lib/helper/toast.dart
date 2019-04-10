@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+/// toast
 class Toast {
   static const int LENGTH_SHORT = 1;
   static const int LENGTH_LONG = 2;

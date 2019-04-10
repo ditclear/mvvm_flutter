@@ -3,17 +3,19 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mvvm_flutter/model/repository.dart';
+import 'package:mvvm_flutter/view/base.dart';
 import 'package:rxdart/rxdart.dart';
 
-/**
- * ViewModel
- */
-class HomeProvide extends ChangeNotifier {
-  final CompositeSubscription _subscriptions = CompositeSubscription();
+/// ViewModel 层
+///
+/// 将 Model层 [GithubRepo] 返回的数据转换成 View 层 [HomePage] 需要展示的数据
+/// 通过 [notifyListeners] 通知UI层更新
+class HomeProvide extends BaseProvide {
   final GithubRepo _repo;
   String username = "";
   String password = "";
   bool _loading = false;
+  /// 结果
   String _response = "";
 
   final String title;
@@ -43,13 +45,14 @@ class HomeProvide extends ChangeNotifier {
 
   HomeProvide(this.title,this._repo);
 
-  /**
-   * call the model layer 's method to login
-   * doOnData : handle response when success
-   * doOnError : handle error when failure
-   * doOnListen ： show loading when listen start
-   * doOnDone ： hide loading when complete
-   */
+  /// 登录
+  ///
+  /// 调用 [_repo] 的 [login] 方法进行登录
+  /// doOnData : handle response when success
+  /// doOnError : handle error when failure
+  /// doOnListen ： show loading when listen start
+  /// doOnDone ： hide loading when complete
+  /// return [Observable] 给 View 层
   Observable login() => _repo
       .login(username, password)
       .doOnData((r) => response = r.toString())
@@ -60,20 +63,5 @@ class HomeProvide extends ChangeNotifier {
       })
       .doOnListen(() => loading = true)
       .doOnDone(() => loading = false);
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void disposeBag(){
-    _subscriptions.dispose();
-
-  }
-
-  /// add [StreamSubscription] to [_subscriptions]
-  void plus(StreamSubscription s) {
-    _subscriptions.add(s);
-  }
 
 }

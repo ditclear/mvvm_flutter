@@ -71,6 +71,7 @@ Future _showLoadingDialog(BuildContext c, LoadingDialog loading,
         barrierDismissible: cancelable,
         builder: (BuildContext c) => loading);
 
+/// 加载框
 class LoadingDialog extends CupertinoAlertDialog {
   BuildContext parentContext;
   BuildContext currentContext;

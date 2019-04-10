@@ -1,7 +1,7 @@
 
 import 'dart:async';
 
-import 'package:mvvm_flutter/di/modules.dart';
+import 'package:mvvm_flutter/di/app_module.dart';
 import 'package:rxdart/rxdart.dart';
 
 Future _get(String url, {Map<String, dynamic> params}) async {

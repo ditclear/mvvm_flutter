@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mvvm_flutter/view/home_page.dart';
-
 import 'di/app_module.dart';
-import 'package:dartin/dartin.dart';
 
 
-void main() {
-  /// DartIn start
-  startDartIn(appModule);
+void main() async{
+  // wait init
+  await init();
 
   runApp(MyApp());
 }
