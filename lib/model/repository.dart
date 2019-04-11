@@ -29,11 +29,12 @@ class GithubRepo {
 
   /// 登录
   ///
-  /// - 将ViewModel层 传递过来的[username] 和 [password] 处理为 token 并用[_sp]进行缓存
+  /// - 将ViewModel层 传递过来的[username] 和 [password] 处理为 token 并用[SharedPreferences]进行缓存
   /// - 调用 [_remote] 的 [login] 方法进行网络访问
-  /// - 返回 [Observable] 类型的数据给ViewModel层
+  /// - 返回 [Observable] 给ViewModel层
   Observable login(String username, String password) {
     _sp.putString(KEY_TOKEN, "basic " + base64Encode(utf8.encode('$username:$password')));
     return _remote.login();
   }
+
 }

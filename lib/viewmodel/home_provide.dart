@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:mvvm_flutter/model/repository.dart';
 import 'package:mvvm_flutter/view/base.dart';
 import 'package:rxdart/rxdart.dart';
@@ -15,6 +12,7 @@ class HomeProvide extends BaseProvide {
   String username = "";
   String password = "";
   bool _loading = false;
+
   /// 结果
   String _response = "";
 
@@ -43,16 +41,17 @@ class HomeProvide extends BaseProvide {
     notifyListeners();
   }
 
-  HomeProvide(this.title,this._repo);
+  HomeProvide(this.title, this._repo);
 
   /// 登录
   ///
-  /// 调用 [_repo] 的 [login] 方法进行登录
-  /// doOnData : handle response when success
-  /// doOnError : handle error when failure
-  /// doOnListen ： show loading when listen start
-  /// doOnDone ： hide loading when complete
-  /// return [Observable] 给 View 层
+  /// 调用 model层[GithubRepo] 的 login 方法进行登录
+  /// 传入 [username] 和 [password]
+  /// 成功：显示返回的信息
+  /// 失败: 处理错误，显示错误信息
+  /// 订阅开始：loading = true
+  /// 订阅结束：loading = false
+  /// 返回 [Observable] 给 View 层
   Observable login() => _repo
       .login(username, password)
       .doOnData((r) => response = r.toString())
@@ -63,5 +62,4 @@ class HomeProvide extends BaseProvide {
       })
       .doOnListen(() => loading = true)
       .doOnDone(() => loading = false);
-
 }
