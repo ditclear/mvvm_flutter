@@ -11,7 +11,7 @@ const testScope = DartInScope('test');
 ///
 /// 定义ViewModel的构造方式
 final viewModelModule = Module([
-  factory<HomeProvide>(({params}) => HomeProvide(params.get(0), get<GithubRepo>())),
+  factory<HomeProvide>(({params}) => HomeProvide(params.get(0), get())),
 ])
   ..addOthers(testScope, [
     ///other scope
@@ -22,7 +22,7 @@ final viewModelModule = Module([
 ///
 /// 定义Repository 的构造方式
 final repoModule = Module([
-  lazy<GithubRepo>(({params}) => GithubRepo(get<GithubService>(), get<SpUtil>())),
+  lazy<GithubRepo>(({params}) => GithubRepo(get(), get())),
 ]);
 
 /// Remote 模块
