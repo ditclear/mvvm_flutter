@@ -22,7 +22,7 @@ abstract class ItemPresenter<T> {
 }
 
 /// BaseProvide
-class BaseProvide extends ChangeNotifier {
+class BaseProvide with ChangeNotifier {
   CompositeSubscription compositeSubscription = CompositeSubscription();
 
   /// add [StreamSubscription] to [compositeSubscription]
@@ -31,18 +31,26 @@ class BaseProvide extends ChangeNotifier {
   addSubscription(StreamSubscription subscription) {
     compositeSubscription.add(subscription);
   }
+
+  @override
+  void dispose() {
+    if (!compositeSubscription.isDisposed) {
+      compositeSubscription.dispose();
+    }
+    super.dispose();
+  }
 }
 
 /// page的基类 [PageProvideNode]
 ///
-/// 隐藏了 [ProviderNode] 的调用
-abstract class PageProvideNode<T extends ChangeNotifier> extends StatelessWidget {
-  /// The values made available to the [child].
-
-  final List<dynamic> params;
+/// 隐藏了 [Provider] 的调用
+abstract class PageProvideNode<T extends ChangeNotifier> extends StatelessWidget implements Presenter {
   final T mProvider;
 
-  PageProvideNode(this.params) : mProvider = inject<T>(params: params);
+  /// 构造函数
+  ///
+  /// [params] 代表注入ViewModel[mProvider]时所需的参数，需按照[mProvider]的构造方法顺序赋值
+  PageProvideNode({List<dynamic> params}) : mProvider = inject<T>(params: params);
 
   Widget buildContent(BuildContext context);
 
@@ -53,4 +61,10 @@ abstract class PageProvideNode<T extends ChangeNotifier> extends StatelessWidget
       child: buildContent(context),
     );
   }
+
+  ///点击事件处理
+  ///
+  /// 可通过[action]进行分发
+  @override
+  void onClick(String action) {}
 }

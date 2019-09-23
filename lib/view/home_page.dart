@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/helper/dialog.dart';
 import 'package:mvvm_flutter/helper/toast.dart';
 import 'package:mvvm_flutter/helper/widget_utils.dart';
 import 'package:mvvm_flutter/view/base.dart';
@@ -10,13 +9,11 @@ import 'package:provider/provider.dart';
 /// Page ：HomePage
 ///
 /// 获取其它页面传递来的参数
-/// 构造出各个 Provide 对象，放入到 [mProviders]里
 class HomePage extends PageProvideNode<HomeProvide> {
   /// 提供
   ///
   /// 获取参数 [title] 并生成一个[HomeProvide]对象
-  /// 然后放入 [mProviders]中
-  HomePage(String title) : super([title]);
+  HomePage(String title) : super(params: [title]);
 
   @override
   Widget buildContent(BuildContext context) {
@@ -40,7 +37,7 @@ class _HomeContentPage extends StatefulWidget {
 }
 
 class _HomeContentState extends State<_HomeContentPage>
-    with SingleTickerProviderStateMixin<_HomeContentPage>
+    with TickerProviderStateMixin<_HomeContentPage>
     implements Presenter {
   HomeProvide mProvide;
 
@@ -49,8 +46,6 @@ class _HomeContentState extends State<_HomeContentPage>
   Animation<double> _animation;
 
   static const ACTION_LOGIN = "login";
-
-  final LoadingDialog loadingDialog = LoadingDialog();
 
   @override
   void initState() {
@@ -72,7 +67,8 @@ class _HomeContentState extends State<_HomeContentPage>
 
   @override
   void onClick(String action) {
-    if (action == ACTION_LOGIN) {
+    print("onClick:" + action);
+    if (ACTION_LOGIN == action) {
       login();
     }
   }
@@ -89,8 +85,6 @@ class _HomeContentState extends State<_HomeContentPage>
       _controller.forward();
     }).doOnDone(() {
       _controller.reverse();
-    }).doOnCancel(() {
-      print("======cancel======");
     }).listen((_) {
       //success
       Toast.show("login success", context, type: Toast.SUCCESS);
@@ -149,8 +143,12 @@ class _HomeContentState extends State<_HomeContentPage>
                   margin: EdgeInsets.fromLTRB(12, 12, 12, 0),
                   padding: EdgeInsets.all(5.0),
                   decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-                  child: Consumer<HomeProvide>(
-                    builder: (BuildContext context, HomeProvide value, Widget child) => Text(value.response),
+                  child: Selector<HomeProvide, String>(
+                    selector: (_, data) => data.response,
+                    builder: (context, value, child) {
+                      // 使用Selector，当provide.notifyListeners()时,只有data.response改变的时候才会build
+                      return Text(value);
+                    },
                   ),
                 ),
               )
@@ -167,7 +165,8 @@ class _HomeContentState extends State<_HomeContentPage>
   /// 当 [mProvide.loading] 为true 时 ，点击事件不生效
   Consumer<HomeProvide> buildLoginBtnProvide() {
     return Consumer<HomeProvide>(
-      builder: (BuildContext context, HomeProvide value, Widget child) {
+      builder: (context, value, child) {
+        // 使用 Consumer ,当provide.notifyListeners()时都会rebuild
         return CupertinoButton(
           onPressed: value.loading ? null : () => onClick(ACTION_LOGIN),
           pressedOpacity: 0.8,
@@ -199,14 +198,12 @@ class _HomeContentState extends State<_HomeContentPage>
     } else {
       return FittedBox(
         fit: BoxFit.scaleDown,
-        child: Consumer<HomeProvide>(
-          builder: (BuildContext context, HomeProvide value, Widget child) => Text(
-            'Login With Github Account',
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.fade,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.white),
-          ),
+        child: Text(
+          'Login With Github Account',
+          maxLines: 1,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.fade,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.white),
         ),
       );
     }
