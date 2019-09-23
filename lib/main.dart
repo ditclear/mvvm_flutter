@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mvvm_flutter/view/home_page.dart';
+import 'package:provider/provider.dart';
 import 'di/app_module.dart';
 
 
 void main() async{
   // wait init
   await init();
-
+  Provider.debugCheckInvalidValueType = null;
   runApp(MyApp());
 }
 

@@ -1,33 +1,23 @@
-import 'package:dartin/dartin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/helper/dialog.dart';
 import 'package:mvvm_flutter/helper/toast.dart';
 import 'package:mvvm_flutter/helper/widget_utils.dart';
 import 'package:mvvm_flutter/view/base.dart';
 import 'package:mvvm_flutter/viewmodel/home_provide.dart';
-import 'package:provide/provide.dart';
+import 'package:provider/provider.dart';
 
 /// Page ：HomePage
 ///
 /// 获取其它页面传递来的参数
-/// 构造出各个 Provide 对象，放入到 [mProviders]里
-class HomePage extends PageProvideNode {
-  /// 页面标题
-  final String title;
-
+class HomePage extends PageProvideNode<HomeProvide> {
   /// 提供
   ///
   /// 获取参数 [title] 并生成一个[HomeProvide]对象
-  /// 然后放入 [mProviders]中
-  HomePage(this.title) {
-    final provide = inject<HomeProvide>(params: [title]);
-    mProviders.provideValue(provide);
-  }
+  HomePage(String title) : super(params: [title]);
 
   @override
   Widget buildContent(BuildContext context) {
-    return _HomeContentPage();
+    return _HomeContentPage(mProvider);
   }
 }
 
@@ -36,15 +26,19 @@ class HomePage extends PageProvideNode {
 /// 展示UI (ps:如果有UI地址，最好附上相应的链接)
 /// 与用户进行交互
 class _HomeContentPage extends StatefulWidget {
+  final HomeProvide provide;
+
+  _HomeContentPage(this.provide);
+
   @override
   State<StatefulWidget> createState() {
     return _HomeContentState();
   }
 }
 
-class _HomeContentState extends State<_HomeContentPage> with SingleTickerProviderStateMixin<_HomeContentPage>
+class _HomeContentState extends State<_HomeContentPage>
+    with TickerProviderStateMixin<_HomeContentPage>
     implements Presenter {
-
   HomeProvide mProvide;
 
   /// 处理动画
@@ -53,11 +47,10 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
 
   static const ACTION_LOGIN = "login";
 
-  final LoadingDialog loadingDialog = LoadingDialog();
-
   @override
   void initState() {
     super.initState();
+    mProvide = widget.provide;
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _animation = Tween(begin: 295.0, end: 48.0).animate(_controller)
       ..addListener(() {
@@ -74,7 +67,8 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
 
   @override
   void onClick(String action) {
-    if (action == ACTION_LOGIN) {
+    print("onClick:" + action);
+    if (ACTION_LOGIN == action) {
       login();
     }
   }
@@ -91,8 +85,6 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
       _controller.forward();
     }).doOnDone(() {
       _controller.reverse();
-    }).doOnCancel(() {
-      print("======cancel======");
     }).listen((_) {
       //success
       Toast.show("login success", context, type: Toast.SUCCESS);
@@ -105,7 +97,6 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
-    mProvide = Provide.value<HomeProvide>(context);
     print("--------build--------");
     return Material(
       child: Scaffold(
@@ -128,7 +119,7 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
               ),
               TextField(
                 obscureText: true,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(10.0),
                   icon: Icon(Icons.lock),
@@ -152,8 +143,12 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
                   margin: EdgeInsets.fromLTRB(12, 12, 12, 0),
                   padding: EdgeInsets.all(5.0),
                   decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-                  child: Provide<HomeProvide>(
-                    builder: (BuildContext context, Widget child, HomeProvide value) => Text(value.response),
+                  child: Selector<HomeProvide, String>(
+                    selector: (_, data) => data.response,
+                    builder: (context, value, child) {
+                      // 使用Selector，当provide.notifyListeners()时,只有data.response改变的时候才会build
+                      return Text(value);
+                    },
                   ),
                 ),
               )
@@ -168,30 +163,29 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
   ///
   /// 按钮宽度根据是否进行请求由[_controller]控制
   /// 当 [mProvide.loading] 为true 时 ，点击事件不生效
-  Provide<HomeProvide> buildLoginBtnProvide() {
-    return Provide<HomeProvide>(
-              builder: (BuildContext context, Widget child, HomeProvide value) {
-                return CupertinoButton(
-                    onPressed: value.loading ? null : () => onClick(ACTION_LOGIN),
-                    pressedOpacity: 0.8,
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: value.btnWidth,
-                      height: 48,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                          gradient: LinearGradient(colors: [
-                            Color(0xFF686CF2),
-                            Color(0xFF0E5CFF),
-                          ]),
-                          boxShadow: [
-                            BoxShadow(color: Color(0x4D5E56FF), offset: Offset(0.0, 4.0), blurRadius: 13.0)
-                          ]),
-                      child: buildLoginChild(value),
-                    ),
-                  );
-              },
-            );
+  Consumer<HomeProvide> buildLoginBtnProvide() {
+    return Consumer<HomeProvide>(
+      builder: (context, value, child) {
+        // 使用 Consumer ,当provide.notifyListeners()时都会rebuild
+        return CupertinoButton(
+          onPressed: value.loading ? null : () => onClick(ACTION_LOGIN),
+          pressedOpacity: 0.8,
+          child: Container(
+            alignment: Alignment.center,
+            width: value.btnWidth,
+            height: 48,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                gradient: LinearGradient(colors: [
+                  Color(0xFF686CF2),
+                  Color(0xFF0E5CFF),
+                ]),
+                boxShadow: [BoxShadow(color: Color(0x4D5E56FF), offset: Offset(0.0, 4.0), blurRadius: 13.0)]),
+            child: buildLoginChild(value),
+          ),
+        );
+      },
+    );
   }
 
   /// 登录按钮内部的 child
@@ -202,9 +196,9 @@ class _HomeContentState extends State<_HomeContentPage> with SingleTickerProvide
     if (value.loading) {
       return const CircularProgressIndicator();
     } else {
-      return const FittedBox(
+      return FittedBox(
         fit: BoxFit.scaleDown,
-        child: const Text(
+        child: Text(
           'Login With Github Account',
           maxLines: 1,
           textAlign: TextAlign.center,
