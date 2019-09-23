@@ -16,10 +16,10 @@ The Structure seems like [MVVM-Android](https://github.com/ditclear/MVVM-Android
 
 - [dio](https://github.com/flutterchina/dio) : netword 
 - [rxdart](https://github.com/ReactiveX/rxdart)：reactive programming
-- [flutter-provide](https://github.com/google/flutter-provide)：state managing
+- [provider](https://github.com/rrousselGit/provider)：state managing
 - [dartin](https://github.com/ditclear/dartin): dependency injection
 
-> PS：each layer connected by rx, use responsive thinking and rxdart operators for logical processing.Finally, update the view with [flutter-provide](https://github.com/google/flutter-provide).
+> PS：each layer connected by rx, use responsive thinking and rxdart operators for logical processing.Finally, update the view with [provider](https://github.com/rrousselGit/provider).
 
 ### ScreenShot
 
@@ -76,14 +76,22 @@ class HomeViewModel extends ChangeNotifier {
       .doOnDone(() => loading = false);
 }
 
-//view
-class HomeWidget extends StatefulWidget {
+/// View ：HomePage
+///
+/// 获取其它页面传递来的参数
+class HomePage extends PageProvideNode<HomeProvide> {
+  /// 提供
+  ///
+  /// 获取参数 [title] 并生成一个[HomeProvide]对象
+  HomePage(String title) : super(params: [title]);
+
   @override
-  State<StatefulWidget> createState() {
-    return _HomeState(provideHomeViewModel());
+  Widget buildContent(BuildContext context) {
+    return _HomeContentPage(mProvider);
   }
 }
-class _HomeState extends State<HomeWidget>{
+// ...
+class _HomeContentPageState extends State<_HomeContentPage> implements Presenter{
    //...
   _HomeState(this._viewModel) {
     providers.provideValue(_viewModel);
@@ -96,7 +104,7 @@ class _HomeState extends State<HomeWidget>{
         body://...
        
         CupertinoButton(
-            onPressed: _login,
+            onPressed: ()=>onClick(ACTION_LOGIN),
             //...
          ),
          Container(
@@ -110,6 +118,15 @@ class _HomeState extends State<HomeWidget>{
         //...
         
         );
+  }
+  
+  /// 通过[action]进行事件处理
+  @override
+  void onClick(String action) {
+    print("onClick:" + action);
+    if (ACTION_LOGIN == action) {
+      _login();
+    }
   }
   
     
