@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:dartin/dartin.dart';
 import 'package:flutter/material.dart';
-import 'package:provide/provide.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// normal click event
@@ -21,40 +22,35 @@ abstract class ItemPresenter<T> {
 }
 
 /// BaseProvide
-class BaseProvide with ChangeNotifier {
-
+class BaseProvide extends ChangeNotifier {
   CompositeSubscription compositeSubscription = CompositeSubscription();
-
 
   /// add [StreamSubscription] to [compositeSubscription]
   ///
   /// 在 [dispose]的时候能进行取消
-  addSubscription(StreamSubscription subscription){
+  addSubscription(StreamSubscription subscription) {
     compositeSubscription.add(subscription);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    compositeSubscription.dispose();
   }
 }
 
 /// page的基类 [PageProvideNode]
 ///
 /// 隐藏了 [ProviderNode] 的调用
-abstract class PageProvideNode extends StatelessWidget {
+abstract class PageProvideNode<T extends ChangeNotifier> extends StatelessWidget {
   /// The values made available to the [child].
-  final Providers mProviders = Providers();
+
+  final List<dynamic> params;
+  final T mProvider;
+
+  PageProvideNode(this.params) : mProvider = inject<T>(params: params);
 
   Widget buildContent(BuildContext context);
 
   @override
   Widget build(BuildContext context) {
-    return ProviderNode(
-      providers: mProviders,
+    return ChangeNotifierProvider<T>.value(
+      value: mProvider,
       child: buildContent(context),
     );
   }
-
 }
