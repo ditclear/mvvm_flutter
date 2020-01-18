@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:mvvm_flutter/helper/constants.dart';
-import 'package:mvvm_flutter/helper/net_utils.dart';
-import 'package:mvvm_flutter/helper/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../helper/constants.dart';
+import '../helper/net_utils.dart';
+import '../helper/shared_preferences.dart';
 
 /// 网络层
 ///
@@ -36,5 +37,4 @@ class GithubRepo {
     _sp.putString(KEY_TOKEN, "basic " + base64Encode(utf8.encode('$username:$password')));
     return _remote.login();
   }
-
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/view/home_page.dart';
 import 'package:provider/provider.dart';
+
 import 'di/app_module.dart';
+import 'view/home_page.dart';
 
-
-void main() async{
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   // wait init
   await init();
   Provider.debugCheckInvalidValueType = null;

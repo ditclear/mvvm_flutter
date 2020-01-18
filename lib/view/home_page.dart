@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/helper/toast.dart';
-import 'package:mvvm_flutter/helper/widget_utils.dart';
-import 'package:mvvm_flutter/view/base.dart';
-import 'package:mvvm_flutter/viewmodel/home_provide.dart';
 import 'package:provider/provider.dart';
+
+import '../helper/toast.dart';
+import '../helper/widget_utils.dart';
+import '../view/base.dart';
+import '../viewmodel/home_provide.dart';
 
 /// Page ：HomePage
 ///

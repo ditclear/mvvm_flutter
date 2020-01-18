@@ -1,9 +1,10 @@
 import 'package:dartin/dartin.dart';
 import 'package:dio/dio.dart';
-import 'package:mvvm_flutter/helper/constants.dart';
-import 'package:mvvm_flutter/helper/shared_preferences.dart';
-import 'package:mvvm_flutter/model/repository.dart';
-import 'package:mvvm_flutter/viewmodel/home_provide.dart';
+
+import '../helper/constants.dart';
+import '../helper/shared_preferences.dart';
+import '../model/repository.dart';
+import '../viewmodel/home_provide.dart';
 
 const testScope = DartInScope('test');
 
@@ -13,7 +14,7 @@ const testScope = DartInScope('test');
 final viewModelModule = Module([
   factory<HomeProvide>(({params}) => HomeProvide(params.get(0), get())),
 ])
-  ..addOthers(testScope, [
+  ..withScope(testScope, [
     ///other scope
 //  factory<HomeProvide>(({params}) => HomeProvide(params.get(0), get<GithubRepo>())),
   ]);
@@ -22,21 +23,21 @@ final viewModelModule = Module([
 ///
 /// 定义Repository 的构造方式
 final repoModule = Module([
-  lazy<GithubRepo>(({params}) => GithubRepo(get(), get())),
+  factory<GithubRepo>(({params}) => GithubRepo(get(), get())),
 ]);
 
 /// Remote 模块
 ///
 /// 定义各网络接口服务的构造方式
 final remoteModule = Module([
-  single<GithubService>(GithubService()),
+  factory<GithubService>(({params}) => GithubService()),
 ]);
 
 /// Local 模块
 ///
 /// 定义数据库层及SharedPreference/KV等等本地存储的构造方式
 final localModule = Module([
-  single<SpUtil>(spUtil),
+  single<SpUtil>(({params}) => spUtil),
 ]);
 
 final appModule = [viewModelModule, repoModule, remoteModule, localModule];
