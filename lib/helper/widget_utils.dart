@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:mvvm_flutter/helper/toast.dart';
+
+import '../helper/toast.dart';
 
 /// 对错误 [e] 进行分发处理
 dispatchFailure(BuildContext context, dynamic e) {

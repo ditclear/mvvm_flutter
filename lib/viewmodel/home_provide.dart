@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:mvvm_flutter/model/repository.dart';
-import 'package:mvvm_flutter/view/base.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../model/repository.dart';
+import '../view/base.dart';
 
 /// ViewModel 层
 ///
